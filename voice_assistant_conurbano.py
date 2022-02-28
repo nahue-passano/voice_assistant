@@ -79,11 +79,7 @@ if __name__ == "__main__":
                 understand=1
                 speak("Mi nombre es Infiniem")
                 break
-                
-            if "hermosa" in text:
-                understand=1
-                speak("Carolina")
-                break
+
                 
             if "doctor" in text:
                 understand=1

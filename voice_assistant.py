@@ -51,6 +51,7 @@ if __name__ == "__main__":
         
         while text_wake.count(wake_word) > 0:
             
+            speak("Decime:")
             
             text = get_audio()
             
@@ -60,9 +61,11 @@ if __name__ == "__main__":
             note_key_words = ["anotame esto", "toma nota", "escibime esto"]
             for key in note_key_words:
                 if key in text:
+                    speak("¿Que queres que anote?")
                     note_text = get_audio()
                     note(note_text)
                     understand = 1
+                    speak("Listo")
                     break
                     
                 # Bienvenida    
@@ -77,17 +80,13 @@ if __name__ == "__main__":
                 speak("Mi nombre es Infiniem")
                 break
                 
-            if "hermosa" in text:
-                understand=1
-                speak("Carolina")
-                break
-                
             if "doctor" in text:
                 understand=1
                 speak("Otra vez estoy tomando falopa aaaaaaaa me encanta maldita falopa")
                 break
                 
             if understand==0:
+                speak("No te entendí")
             else:
                 break
         
