@@ -1,3 +1,3 @@
-# Simple voice assistant in Python with Google Text-To-Speech API
+# Simple voice assistant in Python with Google's Text-To-Speech API
  
 Under construction
