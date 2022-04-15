@@ -80,10 +80,6 @@ if __name__ == "__main__":
                 speak("Mi nombre es Infiniem")
                 break
                 
-            if "doctor" in text:
-                understand=1
-                speak("Otra vez estoy tomando falopa aaaaaaaa me encanta maldita falopa")
-                break
                 
             if understand==0:
                 speak("No te entendí")
