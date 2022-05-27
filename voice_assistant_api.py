@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from pydantic import BaseModel
 
 
-load_dotenv('weather_api_key.env')
+load_dotenv('keys/weather_api_key.env')
 api_key = os.getenv("OPENWEATHERMAP_KEY")
 
 app = FastAPI()
