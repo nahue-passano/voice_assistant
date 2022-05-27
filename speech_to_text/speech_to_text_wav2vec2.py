@@ -21,12 +21,16 @@ def speech_file_to_array(batch):
     
     return batch
 
-def load_model(MODEL_ID):
-    if os.path.isdir('model_STT_wav2vec2_esp') and os.path.isdir('processor_STT_wav2vec2_esp'):
+def audio_to_array(audio_path):
+    audio_array, _ = librosa.load(audio_path, sr = 16_000)
+    return audio_array
+
+def load_model(MODEL_ID = "jonatasgrosman/wav2vec2-large-xlsr-53-spanish"):
+    if os.path.isdir('speech_to_text/model_STT_wav2vec2_esp') and os.path.isdir('speech_to_text/processor_STT_wav2vec2_esp'):
         
-        model = Wav2Vec2ForCTC.from_pretrained('model_STT_wav2vec2_esp')
+        model = Wav2Vec2ForCTC.from_pretrained('speech_to_text/model_STT_wav2vec2_esp')
         
-        processor = Wav2Vec2Processor.from_pretrained('processor_STT_wav2vec2_esp')
+        processor = Wav2Vec2Processor.from_pretrained('speech_to_text/processor_STT_wav2vec2_esp')
 
         print('Model loaded from local dirs')
     
@@ -35,8 +39,8 @@ def load_model(MODEL_ID):
         model = Wav2Vec2ForCTC.from_pretrained(MODEL_ID)
         processor = Wav2Vec2Processor.from_pretrained(MODEL_ID)
 
-        model.save_pretrained('model_STT_wav2vec2_esp')
-        processor.save_pretrained('processor_STT_wav2vec2_esp')
+        model.save_pretrained('speech_to_text/model_STT_wav2vec2_esp')
+        processor.save_pretrained('speech_to_text/processor_STT_wav2vec2_esp')
 
         
     return model, processor
@@ -59,15 +63,12 @@ if __name__ == '__main__':
 
     # test_dataset = test_dataset.map(speech_file_to_array)
 
-        # Model ID
-    MODEL_ID = "jonatasgrosman/wav2vec2-large-xlsr-53-spanish"
-
         # Load of speech test
-    speech_test, _ = librosa.load('test_voice.wav', sr = 16_000)
+    speech_test = audio_to_array('speech_to_text/test_voice.wav')
 
         # Load the model and processor
     begin = time.time()
-    model, processor = load_model(MODEL_ID)
+    model, processor = load_model()
     end_model = time.time()
 
         # Inference the speech test
