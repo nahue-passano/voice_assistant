@@ -1,4 +1,4 @@
-# Simple voice assistant in Python with Google's Text-To-Speech API
+# Voice Assistant deployed in FastAPI for inference via Telegram Bot
  
 - **¿Que es un asistente de voz?**
 
