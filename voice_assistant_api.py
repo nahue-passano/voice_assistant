@@ -8,7 +8,7 @@ from speech_to_text import speech_to_text_wav2vec2 as stt_w2v2
 import sounddevice as sd
 
     # Load weather api key
-load_dotenv('keys/weather_api_key.env')
+load_dotenv('api_keys.env')
 api_key = os.getenv("OPENWEATHERMAP_KEY")
 
     # Load model of speech to text
@@ -28,7 +28,6 @@ async def get_response_from_audio(audio_path: Audio):
     predicted_sentence = stt_w2v2.inference_model(model, processor, audio_array)
     
     output = jsonable_encoder({'Prediction':predicted_sentence})
-    # output = jsonable_encoder(audio_path)
     """
     ### load audio
     # print(audio_path)
