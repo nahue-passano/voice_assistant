@@ -11,4 +11,4 @@ Hoy en día, estan integrados en muchos dispositivos que usamos diariamente, as�
 
 Un asistente de voz no es mas que una interfaz de usuario por voz (VUI) que complementa a la interfaz gráfica de usuario (GUI), el cual otorga accesibilidad en las consultas y asignaciones de tareas.
 
-<img src="Voice Assistant.jpg" alt="My cool logo"/>
+<img src="images/Voice Assistant.jpg" alt="My cool logo"/>
