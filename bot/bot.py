@@ -13,9 +13,12 @@ import os
 import logging
 from dotenv import load_dotenv
 import requests, json, socket
-import datetime
+from datetime import datetime
 import soundfile as sf
 import subprocess
+import librosa
+import sounddevice as sd
+from matplotlib import pyplot as plt
 
 load_dotenv('api_keys.env')
 token = os.getenv("TELEGRAM_KEY")
@@ -217,31 +220,22 @@ def unknown(update: Update, context: CallbackContext):
 def download_audio (update: Update, context: CallbackContext):
     """ Función que define mensaje para los textos desconocidos."""
 
-    audio_id = context.bot.get_file(update.message.voice.file_id)
-    
-    print(audio_id)
-    # writing to a custom file
+    audio_id = context.bot.get_file(update.message.voice.file_id)    
+
     path = 'audios/'
-    # file_name = str(datetime.datetime.now()) + '---id-' + str(update.message.chat_id)
-    file_name = str(update.message.chat_id)
-    # file_name.replace(':','-')
-    # file_name.replace('.','_')
-    # file_name.replace(' ','---')
-    file_name = file_name + '.wav'
-    # audio_id.download(path+file_name)
-    audio_id.download('testeee.wav')
+    id = str(update.message.chat_id)
+    date = datetime.now().strftime("%d-%m-%Y---%H-%M-%S")
+    file_name = path + id + '---' + date + '.wav'   
+    
+    audio_id.download(file_name)
 
     url = 'http://127.0.0.1:8000'
     endpoint = '/get-response-from-audio/'
-    
 
-    data_sent = json.dumps({'audio_path': 'speech_to_text/test_voice.wav'})
-
-    update.message.reply_text('pasó')
+    data_sent = json.dumps({'audio_path': file_name})
 
     response = requests.get(url+endpoint, data = data_sent)
-    # print(response.json())
-    update.message.reply_text(str(response.json()))
+    update.message.reply_text(str(response.json()['Prediction']))
     
 
 
