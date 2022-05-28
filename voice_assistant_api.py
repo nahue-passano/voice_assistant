@@ -27,7 +27,7 @@ async def get_response_from_audio(audio_path: Audio):
 
     predicted_sentence = stt_w2v2.inference_model(model, processor, audio_array)
     
-    output = jsonable_encoder({'Prediction':predicted_sentence})
+    output = jsonable_encoder({'Prediction':predicted_sentence[0]})
     """
     ### load audio
     # print(audio_path)
