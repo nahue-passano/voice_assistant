@@ -226,8 +226,10 @@ def download_audio (update: Update, context: CallbackContext):
     id = str(update.message.chat_id)
     date = datetime.now().strftime("%d-%m-%Y---%H-%M-%S")
     file_name = path + id + '---' + date + '.wav'   
-    
+
     audio_id.download(file_name)
+
+    update.message.reply_text(f'Hola {update.message.chat.first_name}! Foxie 🦊 está escuchando tu audio...')
 
     url = 'http://127.0.0.1:8000'
     endpoint = '/get-response-from-audio/'
