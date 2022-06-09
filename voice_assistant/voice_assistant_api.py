@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from dotenv import load_dotenv
 from pydantic import BaseModel
-from speech_to_text import speech_to_text_wav2vec2 as stt_w2v2
+import speech_to_text_wav2vec2 as stt_w2v2
 import sounddevice as sd
 
     # Load weather api key
@@ -51,7 +51,9 @@ async def get_response_from_audio(audio_path: Audio):
 
 if __name__ == '__main__':
     import os
-    os.system('uvicorn voice_assistant_api:app --reload')
+    import uvicorn
+    # os.system('uvicorn voice_assistant/voice_assistant_api:app --reload')
+    uvicorn.run("voice_assistant_api:app", host="127.0.0.1", port=8000, log_level="info")
 
     # url = 'http://127.0.0.1:8000'
     # endpoint = '/get-response-from-audio'

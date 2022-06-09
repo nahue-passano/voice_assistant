@@ -234,12 +234,25 @@ def download_audio (update: Update, context: CallbackContext):
     url = 'http://127.0.0.1:8000'
     endpoint = '/get-response-from-audio/'
 
+    # file_name_split = file_name.split('/')
+    # file_name = '/'.join(file_name_split[1:])
+
     data_sent = json.dumps({'audio_path': file_name})
 
     response = requests.get(url+endpoint, data = data_sent)
-    update.message.reply_text(str(response.json()['Prediction']))
     
+    # update.message.reply_text(str(response.json()['Prediction']))
 
+    response = str(response.json()['Prediction'])
+
+    user = update.message.from_user
+    logger.info("[UPDATE] Usuario %s envió un audio", user.first_name)
+
+    if 'puerta' in response:
+        puerta(update, context)
+
+    if 'temperatura' in response:
+        ambiente(update, context)
 
 def main():
     # Crear "updater" y pasarle el token de tu bot
