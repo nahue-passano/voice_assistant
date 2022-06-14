@@ -14,13 +14,8 @@ import logging
 from dotenv import load_dotenv
 import requests, json, socket
 from datetime import datetime
-import soundfile as sf
-import subprocess
-import librosa
-import sounddevice as sd
-from matplotlib import pyplot as plt
 
-load_dotenv('api_keys.env')
+load_dotenv('bot.env')
 token = os.getenv("TELEGRAM_KEY")
 api_key = os.getenv("OPENWEATHERMAP_KEY")
 
@@ -149,7 +144,7 @@ def puerta(update, context):
     # Datos del usuario que se conecta
     chat_id = update.message.chat_id
 
-    if chat_id == int(os.getenv('HERNAN_ID')) or chat_id == int(os.getenv('MAXI_ID')):
+    if chat_id == int(os.getenv('HERNAN_ID')) or chat_id == int(os.getenv('MAXI_ID')) or chat_id == int(os.getenv('NAHUE_ID')) or chat_id == int(os.getenv('MANTIAGO_ID')) or chat_id == int(os.getenv('FRAN_ID')):
         # Establecemos el tipo de socket/conexion
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         port = 1332 # Puerto de comunicacion
@@ -163,6 +158,7 @@ def puerta(update, context):
 
         # Cerramos el socket
         sock.close()
+        context.bot.send_message(chat_id = update.message.chat_id, text = "🔓 Puerta abierta", parse_mode=ParseMode.HTML)
     else:
         context.bot.send_message(chat_id = update.message.chat_id, text = "🤷🏻‍♂️Lo siento, no tenes permisos para esta acción.", parse_mode=ParseMode.HTML)
 
@@ -174,7 +170,7 @@ def ambiente(update, context):
     base_url = "http://api.openweathermap.org/data/2.5/weather?"
  
     # ciudad (se lo mas especifico posible en el nombre)
-    city_name = "Colegiales"
+    city_name = "Palermo"
  
     # esta es la URL completa con la informacion concatenada para realizar la petición correcta
     complete_url = base_url + "appid=" + api_key + "&q=" + city_name + "&units=metric"	
@@ -221,38 +217,55 @@ def download_audio (update: Update, context: CallbackContext):
     """ Función que define mensaje para los textos desconocidos."""
 
     audio_id = context.bot.get_file(update.message.voice.file_id)    
-
-    path = 'audios/'
+    
+    # Setting audio name
     id = str(update.message.chat_id)
     date = datetime.now().strftime("%d-%m-%Y---%H-%M-%S")
-    file_name = path + id + '---' + date + '.wav'   
-
-    audio_id.download(file_name)
+    audio_name = id + '---' + date + '.wav'   
+    
+    # Setting audio path to download
+    path = 'audios_telegram/'
+    audio_path = os.path.join(path , audio_name)
+    audio_id.download(audio_path)
 
     update.message.reply_text(f'Hola {update.message.chat.first_name}! Foxie 🦊 está escuchando tu audio...')
 
-    url = 'http://127.0.0.1:8000'
+    # Setting host and port to make request
+    host = os.getenv('VOICE_ASSISTANT_HOST', default = 'http://127.0.0.1:')
+    port = os.getenv('VOICE_ASSISTANT_PORT', default = '8000') 
+    host_port = ''.join((host,port))
+
+    # Testing
+    # host_port = 'http://127.0.0.1:8000'
+
+    # Endpoint
     endpoint = '/get-response-from-audio/'
 
-    # file_name_split = file_name.split('/')
-    # file_name = '/'.join(file_name_split[1:])
+    # Data sent to endpoint
+    data_sent = json.dumps({'audio_path': audio_name})
 
-    data_sent = json.dumps({'audio_path': file_name})
-
-    response = requests.get(url+endpoint, data = data_sent)
-    
-    # update.message.reply_text(str(response.json()['Prediction']))
-
+    # Request
+    response = requests.get(host_port + endpoint, data = data_sent)
     response = str(response.json()['Prediction'])
 
     user = update.message.from_user
     logger.info("[UPDATE] Usuario %s envió un audio", user.first_name)
 
+    understand = 0
+
     if 'puerta' in response:
-        puerta(update, context)
+        try:
+            puerta(update, context)
+            understand = 1
+        except:
+            understand = 0        
 
     if 'temperatura' in response:
         ambiente(update, context)
+        understand = 1
+
+    if understand == 0:
+        context.bot.send_message(chat_id = update.message.chat_id, text = "🤷🏻‍♂️Lo siento, no entiendo tu mensaje.", parse_mode=ParseMode.HTML)
 
 def main():
     # Crear "updater" y pasarle el token de tu bot
@@ -328,5 +341,3 @@ def button(update: Update, context: CallbackContext):
 if __name__ == '__main__':
     logging.info('InfiniemBot Iniciado...')
     main()
-
-
