@@ -201,6 +201,16 @@ def suerte(update, context):
     # Responde directametne en el canal donde se le ha hablado.
     update.message.reply_text(msg)
 
+def mejoremos_a_foxie(update, context):
+    ''' Función que define el comando /suerte.
+        Genera un número elatorio entre 1 y 2. '''
+
+    user = update.message.chat.first_name
+    update.message.reply_text('Hola {}, te habla Foxie, te dejo los servicios disponibles:'.format(user))
+    keyboard = [[InlineKeyboardButton(text='temp_automatizacion', )]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    update.message.reply_text('Please choose:', reply_markup=reply_markup)
 
 def unknown_command(update: Update, context: CallbackContext):
     """ Función que define mensaje para los comandos desconocidos."""
@@ -279,6 +289,7 @@ def main():
     dp.add_handler(CommandHandler('ayuda', ayuda))
     dp.add_handler(CommandHandler('salir', salir))
     dp.add_handler(CommandHandler('suerte', suerte))
+    dp.add_handler(CommandHandler('mejoremos_a_foxie', mejoremos_a_foxie))
 
     dp.add_handler(CommandHandler('acciones', acciones))
     dp.add_handler(CommandHandler('puerta', puerta))
