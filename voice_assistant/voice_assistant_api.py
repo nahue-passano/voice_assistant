@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 import speech_to_text_wav2vec2 as stt_w2v2
+from microservices import *
 
 # Load model of speech to text
 model, processor = stt_w2v2.load_model()
@@ -14,9 +15,10 @@ app = FastAPI()
 class Audio(BaseModel):
     audio_path: str
 
-@app.get('/get-response-from-audio/')
-async def get_response_from_audio(audio_path: Audio):
+@app.get('/foxie/')
+async def foxie(audio_path: Audio):
     
+    """ > Loading audio """
     if os.path.exists('audios_foxie/'):
         path = 'audios_foxie/'
         print(path)
@@ -34,39 +36,21 @@ async def get_response_from_audio(audio_path: Audio):
     # Audio to array conversion
     audio_array = stt_w2v2.audio_to_array(audio_path)
 
-    # Prediction
+    """ > Speech to text """
     predicted_sentence = stt_w2v2.inference_model(model, processor, audio_array)
-    output = jsonable_encoder({'Prediction':predicted_sentence[0]})
+    prediction = predicted_sentence[0]
 
+    """ > Request to microservices via Keyword in prediction """
+    understand = 0
 
-    """
-    ### load audio
-    # print(audio_path)
-    ### STT
-    ### NLP
-    ### Information query
-    # print(audio_path{'audio_path'})
-    # # direccion web desde donde solicitaremos la informacion
-    # try:
-    #     base_url = "http://api.openweathermap.org/data/2.5/weather?"
-    #     #     city_name = "Ituzaingo"
-    #     # esta es la URL completa con la informacion concatenada para realizar la petición correcta
-    #     complete_url = base_url + "appid=" + api_key + "&q=" + city_name + "&units=metric"	
-    #     response = requests.get(complete_url)
-    #     # Obtenemos la respuesta en formato JSON
-    #     info = response.json()["main"]
-    # except:
-    #     info = 'que decis flaco'
-    """
+    ### Temperature microservice
+    if 'temperatura' in prediction:
+        response = temperatura()
+        understand = 1
+    
+    if understand == 0:
+        response = "🤷🏻‍♂️Lo siento, no entiendo tu mensaje."
+  
+    output = jsonable_encoder({'response':response})
     return JSONResponse(output)
-
-if __name__ == '__main__':
-    import os
-    import uvicorn
-    uvicorn.run("voice_assistant_api:app", host="127.0.0.1", port=8000, log_level="info")
-
-    # url = 'http://127.0.0.1:8000'
-    # endpoint = '/get-response-from-audio'
-    # data = json.dumps({'audio_path': 'audio.wav'})
-    # response = requests.post(url+endpoint, data=data)
     
