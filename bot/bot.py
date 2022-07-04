@@ -223,7 +223,7 @@ def unknown(update: Update, context: CallbackContext):
 
     context.bot.send_message(chat_id = update.message.chat_id, text = "🤷🏻‍♂️Lo siento, no entiendo tu mensaje.", parse_mode=ParseMode.HTML)
 
-def download_audio (update: Update, context: CallbackContext):
+def audio_for_foxie (update: Update, context: CallbackContext):
     """ Función que define mensaje para los textos desconocidos."""
 
     audio_id = context.bot.get_file(update.message.voice.file_id)    
@@ -239,43 +239,33 @@ def download_audio (update: Update, context: CallbackContext):
     audio_id.download(audio_path)
 
     update.message.reply_text(f'Hola {update.message.chat.first_name}! Foxie 🦊 está escuchando tu audio...')
+    user = update.message.from_user
+    logger.info("[UPDATE] Usuario %s envió un audio", user.first_name)
 
     # Setting host and port to make request
     host = os.getenv('VOICE_ASSISTANT_HOST', default = 'http://127.0.0.1:')
     port = os.getenv('VOICE_ASSISTANT_PORT', default = '8000') 
     host_port = ''.join((host,port))
 
-    # Testing
-    # host_port = 'http://127.0.0.1:8000'
-
     # Endpoint
-    endpoint = '/get-response-from-audio/'
+    endpoint = '/foxie/'
 
     # Data sent to endpoint
     data_sent = json.dumps({'audio_path': audio_name})
 
     # Request
     response = requests.get(host_port + endpoint, data = data_sent)
-    response = str(response.json()['Prediction'])
+    response = str(response.json()['response'])
 
-    user = update.message.from_user
-    logger.info("[UPDATE] Usuario %s envió un audio", user.first_name)
+    # understand = 0
+    # if 'puerta' in response:
+    #     try:
+    #         puerta(update, context)
+    #         understand = 1
+    #     except:
+    #         understand = 0        
 
-    understand = 0
-
-    if 'puerta' in response:
-        try:
-            puerta(update, context)
-            understand = 1
-        except:
-            understand = 0        
-
-    if 'temperatura' in response:
-        ambiente(update, context)
-        understand = 1
-
-    if understand == 0:
-        context.bot.send_message(chat_id = update.message.chat_id, text = "🤷🏻‍♂️Lo siento, no entiendo tu mensaje.", parse_mode=ParseMode.HTML)
+    context.bot.send_message(chat_id = update.message.chat_id, text = response, parse_mode=ParseMode.HTML)
 
 def main():
     # Crear "updater" y pasarle el token de tu bot
@@ -302,7 +292,7 @@ def main():
 
     dp.add_handler(CallbackQueryHandler(button))
 
-    dp.add_handler(MessageHandler(Filters.audio | Filters.voice, download_audio))
+    dp.add_handler(MessageHandler(Filters.audio | Filters.voice, audio_for_foxie))
 
     # Para manejar mensajes no programados
     dp.add_handler(MessageHandler(Filters.text & (~Filters.command), unknown))
