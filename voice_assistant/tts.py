@@ -1,6 +1,4 @@
 import soundfile as sf
-import torch
-import torchaudio
 from nemo.collections.tts.models import FastPitchModel
 from nemo.collections.tts.models import HifiGanModel
 
@@ -10,7 +8,7 @@ hifigan_name = "tts_es_hifigan_ft_fastpitch_multispeaker"
 spec_generator = FastPitchModel.from_pretrained(fastpitch_name)
 vocoder = HifiGanModel.from_pretrained(hifigan_name)
 
-def generate_speech(text: str, speaker: int, acoustic_model=spec_generator, vocoder=vocoder) ->:
+def generate_speech(text: str, speaker: int, acoustic_model=spec_generator, vocoder=vocoder):
     """
     Generate speech audio waveform from text input.
 
